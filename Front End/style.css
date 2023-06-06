@@ -12,10 +12,11 @@
     justify-content: center;
     white-space: nowrap;
   }
-
-  .navbar2{
+  
+  .navbar2 {
     overflow: hidden;
     display: flex;
+    flex-wrap: wrap; /* Agregado: Permite envolver los elementos en varias líneas */
   }
   
   .navbar a {
@@ -23,12 +24,53 @@
     text-align: center;
     padding: 15px 15px;
     text-decoration: none;
-    margin: 0 100px; 
+    margin: 0 10px; /* Modificado: Reduce el margen horizontal */
+    flex: 1; /* Agregado: Permite que los elementos se expandan para llenar el espacio */
+    max-width: 200px; /* Agregado: Limita el ancho máximo de los elementos */
+    box-sizing: border-box; /* Agregado: Incluye el padding en el ancho total */
   }
   
   .navbar a:hover {
     background-color: #ddd;
     color: black;
+  }
+
+  .combobox {
+    position: relative;
+    display: inline-block;
+  }
+
+  .combobox select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  .combobox:after {
+    content: '\25BC';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  .input-container {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .input-container input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
   }
 
   /* Estilos CSS para el contenido de la página */
@@ -69,11 +111,31 @@
   }
   
 
-  .div-botones{
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 10vh;
+  .div-botones {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .combobox,
+  .input-container {
+    margin: 0 50px;
+  }
+
+  .combobox select {
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+  }
+
+  .input-container input {
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
   }
 
 
