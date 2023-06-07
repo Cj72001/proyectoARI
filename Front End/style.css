@@ -119,17 +119,7 @@
     align-items: center;
   }
 
-  .combobox,
-  .input-container {
-    margin: 0 50px;
-  }
-
-  .combobox select {
-    width: 200px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-  }
+ 
 
   .input-container input {
     width: 200px;
@@ -156,9 +146,71 @@
   }
 
   .div-texto{
+    
     background-color:bisque;
-    padding: 12%;
-    margin-left: 5%;
-    margin-right: 5%;
+   
   }
   
+  .container-box {
+    display: flex;
+    flex-direction: row;
+    padding: 2%;
+    height: 20em;
+  }
+
+  .box {
+    flex: 1;
+    padding: 20px;
+    margin: 10px;
+  }
+
+  
+  .custom-scrollbar {
+    width: 300px;
+    height: 200px;
+    overflow: auto;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px; /* Ancho de la barra de desplazamiento */
+    background-color: #000000;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color de fondo de la barra de desplazamiento */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888; /* Color del pulgar de la barra de desplazamiento */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color del pulgar de la barra de desplazamiento al pasar el cursor sobre él */
+  }
+ 
+  .button-container {
+    display: block;
+    margin-bottom: 10px; /* Espacio entre los botones */
+  }
+
+  .button-convertir{
+    background-color:#ccc; /* Green */
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: 220px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+  }
+
+  .separador{
+    padding-top: 2em;
+  }
+
+  .separador2 {
+    padding-left: 12em;
+  }
+
