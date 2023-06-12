@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<clienteXml>
+    <apellidos>Flores Alas</apellidos>
+    <documento>03110567-7</documento>
+    <nombres>Omar Rafael</nombres>
+    <numeroTarjeta></numeroTarjeta>
+    <poligono>poligono</poligono>
+    <telefono>777777</telefono>
+    <tipoTarjeta>gold</tipoTarjeta>
+</clienteXml>
