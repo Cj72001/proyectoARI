@@ -1,6 +1,6 @@
 package com.uca.spring.controller;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Controller; 
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,11 +34,11 @@ public class AppController {
 	  //Contenido del txt:
 	  String fileContent = "";
 	  
-	  //Cliente con sus datos 
-	  Cliente cliente = new Cliente("", "", "", "", "", "", "");
-	  
 	//Array para separar el contenido del documento segun el delimitador TXT a XML
 	  String[] datosArrayTxtXml = new String[]{};
+	  
+	  //Array para separar los clientes
+	  String[] clientesArrayTxtXml = new String[]{};
 
 	//Action que se invoca al iniciar la app en la ruta del login (/)
   @GetMapping("/")
@@ -46,7 +46,6 @@ public class AppController {
 	  
 	  //Inicializando resultados
 	  fileContent = "";
-	  cliente = new Cliente("", "", "", "", "", "", "");
 	  datosArrayTxtXml = new String[]{};
 	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
@@ -60,7 +59,6 @@ public class AppController {
 	
 	  //Inicializando resultados
 	  fileContent = "";
-	  cliente = new Cliente("", "", "", "", "", "", "");
 	  datosArrayTxtXml = new String[0];
 	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
@@ -95,15 +93,6 @@ public class AppController {
 	  
 	  
 		  if (!file.isEmpty()) {
-			  
-			// Verificar el tamaño del archivo (en bytes)
-//		        long maxSize = 10 * 1024 * 1024; // 10 MB 
-//		        if (file.getSize() <= maxSize) {
-//		        	// El archivo seleccionado es demasiado grande
-//		            // Manejar el error de tamaño de archivo excedido
-//		        	modelMap.put("error1","Ha seleccionado un archivo demasiado grande");
-//		  		  	return "txt_xml.jsp";
-//		        }
 			  
 		        // Verificar el tipo de archivo
 		        if (file.getContentType().equals("text/plain")) {
@@ -144,8 +133,17 @@ public class AppController {
 		  	  }
 		    
 		    // Realizar acciones con el contenido del archivo
+		  	
+		  	//se guardan los clientes en
+		  	clientesArrayTxtXml = fileContent.split("\n");
+		  	
+		  	for(String cliente : clientesArrayTxtXml) {
+		  		
+		  	}
+		  	
 		  	//Se guardan los datos del cliente en 
 		  	datosArrayTxtXml = fileContent.split(",");
+		  	
 		  	if(datosArrayTxtXml.length != 7) {
 		  		//No se introducieron toda la informacion del cliente
 		  		modelMap.put("error1","Introduzca un archivo txt con el numero de datos establecidos");
@@ -153,14 +151,10 @@ public class AppController {
 		  	}
 		  	else {
 		  		//Se introdujo la informacion correctamente
-		  		
-		  		cliente.setDocumento(datosArrayTxtXml[0]);
-		  		cliente.setNombres(datosArrayTxtXml[1]);
-		  		cliente.setApellidos(datosArrayTxtXml[2]);
-		  		cliente.setNumeroTarjeta(datosArrayTxtXml[3]);
-		  		cliente.setTipoTarjeta(datosArrayTxtXml[4]);
-		  		cliente.setTelefono(datosArrayTxtXml[5]);
-		  		cliente.setPoligono(datosArrayTxtXml[6]);
+		  		Cliente cliente = new Cliente(datosArrayTxtXml[0], datosArrayTxtXml[1], 
+		  				datosArrayTxtXml[2], datosArrayTxtXml[3], 
+		  				datosArrayTxtXml[4], datosArrayTxtXml[5],
+		  				datosArrayTxtXml[6]);
 		  		
 		  		modelMap.put("error0", "Archivo Cargado Correctamente");
 		  		modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
