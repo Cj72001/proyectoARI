@@ -1,28 +1,35 @@
 package com.uca.spring.controller;
 
-import org.springframework.stereotype.Controller; 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.uca.spring.model.Cliente;
 import com.uca.spring.model.ClienteXml;
 import com.uca.spring.util.Util;
 
-import javassist.expr.NewArray;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
-import org.apache.commons.io.FileUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 
 
@@ -34,11 +41,20 @@ public class AppController {
 	  //Contenido del txt:
 	  String fileContent = "";
 	  
+	  //contenido del txt exactamente con los saltos:
+	  String archivoCargadoTxtXmlStr = "";
+	  
 	//Array para separar el contenido del documento segun el delimitador TXT a XML
 	  String[] datosArrayTxtXml = new String[]{};
 	  
 	  //Array para separar los clientes
 	  String[] clientesArrayTxtXml = new String[]{};
+	  
+	  //LinkedList para almacenar los clientes (objetos)
+	  LinkedList<Cliente> clientes = new LinkedList<>();
+	  
+	  //XML a TXT
+	  String archivoCargadoXmlTxtStr = "";
 
 	//Action que se invoca al iniciar la app en la ruta del login (/)
   @GetMapping("/")
@@ -46,6 +62,7 @@ public class AppController {
 	  
 	  //Inicializando resultados
 	  fileContent = "";
+	  archivoCargadoTxtXmlStr = "";
 	  datosArrayTxtXml = new String[]{};
 	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
@@ -59,7 +76,9 @@ public class AppController {
 	
 	  //Inicializando resultados
 	  fileContent = "";
+	  archivoCargadoTxtXmlStr = "";
 	  datosArrayTxtXml = new String[0];
+	  clientes.clear();
 	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
 	  
@@ -67,8 +86,16 @@ public class AppController {
   } 
   
   @GetMapping("/xmlTxt")
-  public String xmlTxt() {
+  public String xmlTxt(ModelMap modelMap) {
 	  
+	//Inicializando resultados
+	  fileContent = "";
+	  archivoCargadoTxtXmlStr = "";
+	  archivoCargadoXmlTxtStr = "";
+	  datosArrayTxtXml = new String[0];
+	  clientes.clear();
+	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
+	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");  
     return "xml_txt.jsp";
   } 
   
@@ -84,6 +111,7 @@ public class AppController {
     return "txt_json.jsp";
   } 
   
+  //____________________________________________________________________________________________________________
   //Actions para post:
   
   @PostMapping("/abrirArchivoTxtXml")   
@@ -138,31 +166,33 @@ public class AppController {
 		  	clientesArrayTxtXml = fileContent.split("\n");
 		  	
 		  	for(String cliente : clientesArrayTxtXml) {
+		  		datosArrayTxtXml = cliente.split(",");
 		  		
+		  		if(datosArrayTxtXml.length != 7) {
+			  		//No se introducieron toda la informacion del cliente
+			  		modelMap.put("error1","Introduzca un archivo txt con el numero de datos establecidos");
+		  		  	return "txt_xml.jsp";
+			  	}
+		  		else {
+		  			//Se introdujo la informacion correctamente
+		  			//Se crea un cliente (objeto) y se guarda en la lista de clientes (objetos)
+			  		Cliente clienteObjeto = new Cliente(datosArrayTxtXml[0], datosArrayTxtXml[1], 
+			  				datosArrayTxtXml[2], datosArrayTxtXml[3], 
+			  				datosArrayTxtXml[4], datosArrayTxtXml[5],
+			  				datosArrayTxtXml[6]);
+			  		clientes.addLast(clienteObjeto);
+		  		}
 		  	}
 		  	
-		  	//Se guardan los datos del cliente en 
-		  	datosArrayTxtXml = fileContent.split(",");
-		  	
-		  	if(datosArrayTxtXml.length != 7) {
-		  		//No se introducieron toda la informacion del cliente
-		  		modelMap.put("error1","Introduzca un archivo txt con el numero de datos establecidos");
-	  		  	return "txt_xml.jsp";
+		  	//Para imprimir exactamente como esta en el txt (fileContent)
+		  	for(String c : clientesArrayTxtXml) {
+		  		archivoCargadoTxtXmlStr += c + "<br>";
 		  	}
-		  	else {
-		  		//Se introdujo la informacion correctamente
-		  		Cliente cliente = new Cliente(datosArrayTxtXml[0], datosArrayTxtXml[1], 
-		  				datosArrayTxtXml[2], datosArrayTxtXml[3], 
-		  				datosArrayTxtXml[4], datosArrayTxtXml[5],
-		  				datosArrayTxtXml[6]);
-		  		
+		  	
 		  		modelMap.put("error0", "Archivo Cargado Correctamente");
+		  		modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
 		  		modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
-		  		modelMap.put("textoArchivo1", fileContent);
 			  	return "txt_xml.jsp";
-		  	}
-		  	
-		  
   } 
   
   
@@ -170,7 +200,7 @@ public class AppController {
   public String convertirArchivoTxtXml(ModelMap modelMap, 
 		  @RequestParam("llave") String llave) throws Exception{ 
 	  
-	  if(datosArrayTxtXml.length==0) {
+	  if(clientes.isEmpty()) {
 		  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 		  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
 		  modelMap.put("error1", "Cargue un archivo txt antes");
@@ -178,40 +208,41 @@ public class AppController {
 	  }
 	  
 	  if(llave.isEmpty()) {
-		  modelMap.put("textoArchivo1", fileContent);
+		  modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
 		  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
 		  modelMap.put("error1", "Escriba la clave antes de guardar el archivo convertido");
 		  return "txt_xml.jsp";
 	  }
 	  
+	  if(llave.length() < 8) {
+		  modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
+		  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
+		  modelMap.put("error1", "Escriba una clave valida (8 bits)");
+		  return "txt_xml.jsp";
+	  }
 	  
+	  //TODO: ARREGLAR PARA QUE ENCRIPTE BIEN:
 	  
-	  String encryptedText = "";
-	  String xmlString = "";
-	  
-	  try {
-		  //Encriptando numero de tarjeta de credito:
-		  encryptedText = Util.encrypt(datosArrayTxtXml[3], llave);
+		  clientes.forEach(c->{
+			  String encryptedText = "";
+			  
+			//Encriptando numero de tarjeta de credito:
+			  try {
+				encryptedText = Util.encrypt(c.getNumeroTarjeta(), llave);
+				//Desencriptar:
+				//String decryptedText = Util.decrypt(c.getNumeroTarjeta(), llave);
+			} catch (Exception e) {
+				System.out.println("Hubo un error encriptando la tarjeta");
+				e.printStackTrace();  
+			}
+			  
+			  
+			//Seteando numero de tarjeta encriptada:
+			  c.setNumeroTarjeta(encryptedText);
+		  }); 
 		  
-		  //Desencriptar:
-		  //String decryptedText = Util.decrypt(datosArray[3], llave);
-		  
-		  //Seteando numero de tarjeta encriptada:
-		  cliente.setNumeroTarjeta(encryptedText);
-	  }catch (Exception e) {
-		// TODO: handle exception
-	}
 	  
-	  ClienteXml clienteXml = new ClienteXml();
-	  
-	  clienteXml.setDocumento(datosArrayTxtXml[0]);
-	  clienteXml.setNombres(datosArrayTxtXml[1]);
-	  clienteXml.setApellidos(datosArrayTxtXml[2]);
-	  clienteXml.setNumeroTarjeta(encryptedText);
-	  clienteXml.setTipoTarjeta(datosArrayTxtXml[4]);
-	  clienteXml.setTelefono(datosArrayTxtXml[5]);
-	  clienteXml.setPoligono(datosArrayTxtXml[6]);
-	  
+	  String xmlStr = "";
 	  try {
           // Crear el contexto JAXB
           JAXBContext context = JAXBContext.newInstance(ClienteXml.class);
@@ -221,18 +252,20 @@ public class AppController {
           marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
           marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);
  
+          ClienteXml clientesXml = new ClienteXml();
+          clientesXml.setClientes(clientes);
 
           // Guardar el objeto como archivo XML
-          File file = new File("objeto.xml");
-          marshaller.marshal(clienteXml, file);
+          File file = new File("objeto.xml"); //Si es el mismo nombre, agrega los nuevos clientes
+          marshaller.marshal(clientesXml, file);
 
           System.out.println("Archivo XML guardado correctamente.");
           
           
        // Obtener el contenido del archivo XML como String
           ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-          marshaller.marshal(clienteXml, outputStream);
-          xmlString = new String(outputStream.toByteArray(), "UTF-8");
+          marshaller.marshal(clientesXml, outputStream);
+          xmlStr = new String(outputStream.toByteArray(), "UTF-8");
           
       } catch (JAXBException e) {
           e.printStackTrace();
@@ -240,8 +273,162 @@ public class AppController {
 	  
 	  		
 	  modelMap.put("error0", "Archivo convertido y gurdado correctamente");
-	  modelMap.put("textoArchivo1", fileContent);
-	  modelMap.put("textoResultado1", xmlString);	  	
+	  modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
+	  modelMap.put("textoResultado1", xmlStr);	  	
+	  return "txt_xml.jsp";
+  } 
+  
+  
+  
+  //XML A TXT
+  @PostMapping("/abrirArchivoXmlTxt")
+  public String abrirArchivoXmlTxt(ModelMap modelMap, @RequestParam("archivo") MultipartFile file) {
+
+      if (!file.isEmpty()) {
+          // Verificar el tipo de archivo
+          if (file.getContentType().equals("text/xml")) {
+              try {
+            	  
+                  // Obtener el contenido del archivo XML como cadena
+                  byte[] fileBytes = file.getBytes();
+                  archivoCargadoXmlTxtStr = new String(fileBytes, StandardCharsets.UTF_8);
+                  
+                  
+                  // Crear un contexto JAXB y unmarshaller
+                  JAXBContext jaxbContext = JAXBContext.newInstance(ClienteXml.class);
+                  Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+                  // Obtener el InputStream del archivo MultipartFile
+                  InputStream inputStream = file.getInputStream();
+
+                  // Leer el archivo XML y convertirlo en objeto ClienteXml
+                  ClienteXml clienteXml = (ClienteXml) unmarshaller.unmarshal(inputStream);
+                  
+                  // Acceder a la lista de clientes
+                  List<Cliente> listaClientes = clienteXml.getClientes();
+                  
+                  // Procesar la lista de clientes
+                  for (Cliente cliente : listaClientes) {
+                      clientes.addLast(cliente);
+                  }
+
+                  modelMap.put("textoResultado1", archivoCargadoXmlTxtStr);
+                  return "xml_txt.jsp";
+                  
+              } catch (Exception e) {
+                  e.printStackTrace();
+                  // Manejar el error de lectura o procesamiento del archivo
+                  modelMap.put("error1", "Error al leer o procesar el archivo XML");
+              }
+          } else {
+              // El archivo seleccionado no es un archivo XML
+              // Manejar el error de tipo de archivo no válido
+              modelMap.put("error1", "Seleccione un archivo válido (XML)");
+          }
+      } else {
+          // No se seleccionó ningún archivo
+          // Manejar el error de archivo no seleccionado
+          modelMap.put("error1", "No se ha seleccionado ningún archivo");
+      }
+
+      // Si ocurre algún error, mostrarlo en la vista
+      return "xml_txt.jsp";
+  }
+ 
+  
+  @PostMapping("/convertirArchivoXmlTxt")   
+  public String convertirArchivoXmlTxt(ModelMap modelMap, 
+		  @RequestParam("delimitador") String delimitador,
+		  @RequestParam("llave") String llave) throws Exception{ 
+	  
+	  if(clientes.isEmpty()) {
+		  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
+		  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
+		  modelMap.put("error1", "Cargue un archivo xml antes");
+		  return "xml_txt.jsp";
+	  }
+	  
+	  if(delimitador.isEmpty()) {
+		  modelMap.put("textoArchivo1", archivoCargadoXmlTxtStr);
+		  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
+		  modelMap.put("error1", "Escriba el delimitador antes de guardar el archivo convertido");
+		  return "xml_txt.jsp";
+	  }
+	  
+	  if(llave.isEmpty()) {
+		  modelMap.put("textoArchivo1", archivoCargadoXmlTxtStr);
+		  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
+		  modelMap.put("error1", "Escriba la clave antes de guardar el archivo convertido");
+		  return "xml_txt.jsp";
+	  }
+	  
+	  	  //TODO: DESENCRIPTAR (CACHA UNA EXCEPTION)
+		  clientes.forEach(c->{
+			  
+			String decryptedText = "";
+			  
+			//Desencriptando numero de tarjeta de credito:
+			  try {
+				decryptedText = Util.decrypt(c.getNumeroTarjeta(), llave);
+			} catch (Exception e) {
+				System.out.println("Hubo un error desencriptando la tarjeta");
+				e.printStackTrace();  
+			}
+			  
+			  
+			//Seteando numero de tarjeta desencriptada:
+			  c.setNumeroTarjeta(decryptedText);
+		  }); 
+		  
+		  StringBuilder txtStr = new StringBuilder();
+		  
+		  //TODO:ARREGLAR QUE SEA FILECHOOSER
+		  String fileName = "spring-boot-project00";
+		  
+		  ResourceLoader resourceLoader = null;
+		  
+		  try {
+			  
+			  Resource resource = (Resource) resourceLoader.getResource("classpath:" + fileName);
+	            File file = new File(((org.springframework.core.io.Resource) resource).getURI());
+
+	            // Obtener el directorio padre del archivo
+	            File directory = file.getParentFile();
+
+	            // Crear el directorio si no existe
+	            if (!directory.exists()) {
+	                directory.mkdirs();
+	            }
+			  
+			  clientes.forEach(cliente ->{
+				  String linea = String.format("%s,%s,%s,%s,%s,%s,%s",
+	                		cliente.getNombres(),
+	                		cliente.getApellidos(),
+	                        cliente.getDocumento(),
+	                        cliente.getNumeroTarjeta(),
+	                        cliente.getPoligono(),
+	                        cliente.getTelefono(),
+	                        cliente.getTipoTarjeta());
+				  try {
+					FileCopyUtils.copy(linea.getBytes(StandardCharsets.UTF_8), file);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				  // Agrega un salto de línea después de cada cliente
+	                txtStr.append(linea).append("<br>");
+			  });
+	            
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            // Manejar el error de escritura del archivo
+	        }
+	  
+	  
+	  		
+	  modelMap.put("error0", "Archivo convertido y gurdado correctamente");
+	  modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
+	  modelMap.put("textoResultado1", txtStr);	  	
 	  return "txt_xml.jsp";
   } 
   

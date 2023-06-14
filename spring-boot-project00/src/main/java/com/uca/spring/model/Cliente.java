@@ -10,6 +10,10 @@ public class Cliente {
 	private String telefono = "";
 	private String poligono = "";
 	
+	public Cliente() {
+        // Constructor sin argumentos
+    }
+	
 	public Cliente(String documento, String nombres, String apellidos, String numeroTarjeta, String tipoTarjeta,
 			String telefono, String poligono) {
 		super();

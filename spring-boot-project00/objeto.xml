@@ -1,10 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<clienteXml>
-    <apellidos>Flores Alas</apellidos>
-    <documento>03110567-7</documento>
-    <nombres>Omar Rafael</nombres>
-    <numeroTarjeta></numeroTarjeta>
-    <poligono>poligono</poligono>
-    <telefono>777777</telefono>
-    <tipoTarjeta>gold</tipoTarjeta>
-</clienteXml>
+<clientes>
+    <cliente>
+        <apellidos>Flores Alas</apellidos>
+        <documento>03110567-7</documento>
+        <nombres>Omar Rafael</nombres>
+        <numeroTarjeta>lfGLU9hF7nQGqJa2PkXxfg==</numeroTarjeta>
+        <poligono>poligono&#13;</poligono>
+        <telefono>777777</telefono>
+        <tipoTarjeta>gold</tipoTarjeta>
+    </cliente>
+    <cliente>
+        <apellidos>Sierra Linares</apellidos>
+        <documento>045896-9</documento>
+        <nombres>Caroline Michelle</nombres>
+        <numeroTarjeta>Ox2/g6tMX2pk9XRRHKys5g==</numeroTarjeta>
+        <poligono>poligono2&#13;</poligono>
+        <telefono>8888888</telefono>
+        <tipoTarjeta>diamond</tipoTarjeta>
+    </cliente>
+    <cliente>
+        <apellidos>Alas Flores</apellidos>
+        <documento>123456-7</documento>
+        <nombres>Erick Alexis</nombres>
+        <numeroTarjeta>WAjLKkeSLK8EqvszIk+T6A==</numeroTarjeta>
+        <poligono>poligono3</poligono>
+        <telefono>9999999</telefono>
+        <tipoTarjeta>rock</tipoTarjeta>
+    </cliente>
+</clientes>

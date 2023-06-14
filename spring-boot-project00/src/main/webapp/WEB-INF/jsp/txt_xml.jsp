@@ -70,8 +70,8 @@
 			<form method="post" action="convertirArchivoTxtXml">
 				<div class="box">
 
-					<label>Clave para encriptar tarjeta:</label> <input type="text"
-						name="llave" placeholder="Clave123"
+					<label>Clave para encriptar tarjeta (8 bits):</label> <input type="text"
+						name="llave" placeholder="abcdefgh"
 						onFocus="field_focus(this, 'llave');"
 						onblur="field_blur(this, 'llave');" class="clave" /> <br> <input
 						class="btn2" type="submit" value="Guardar Archivo">
