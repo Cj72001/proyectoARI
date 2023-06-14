@@ -54,7 +54,7 @@
 			<div class="box div-texto  custom-scrollbar">
 
 				<br> <label>Archivo Cargado:</label> <br>
-				<xmp>${textoResultado1}</xmp>
+				<xmp>${textoArchivo1}</xmp>
 				
 			</div>
 			<!-- box div-texto -->
@@ -89,7 +89,7 @@
 			<div class="box div-texto  custom-scrollbar">
 
 				<br> <label>Resultado:</label> <br>
-				<p>${textoArchivo1}</p>
+				<p>${textoResultado1}</p>
 				
 			</div>
 			<!-- box div-texto -->
@@ -97,39 +97,6 @@
 		<!-- container-box -->
 		
 		
-		<!-- Otras etiquetas de contenido -->
-
-<div id="folder-selection">
-    <button id="select-folder-button">Seleccionar carpeta</button>
-</div>
-
-<!-- Otras etiquetas de contenido -->
-
-<script>
-$(document).ready(function() {
-    $('#select-folder-button').click(function() {
-        var input = document.createElement('input');
-        input.type = 'file';
-        input.webkitdirectory = true;
-        input.multiple = false;
-        
-        input.onchange = function(event) {
-            var files = event.target.files;
-            if (files.length > 0) {
-                var folderPath = files[0].webkitRelativePath.split('/')[0];
-                // Enviar la ruta de la carpeta seleccionada al controlador
-                window.location.href = '/convertirArchivoTxtXml?folderPath=' + encodeURIComponent(folderPath);
-            }
-        };
-        
-        input.click();
-    });
-});
-</script>
-
-
-
-
 	</div>
 	<!-- container-wrapper -->
 

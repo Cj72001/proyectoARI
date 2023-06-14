@@ -166,7 +166,7 @@ public class AppController {
 		  	clientesArrayTxtXml = fileContent.split("\n");
 		  	
 		  	for(String cliente : clientesArrayTxtXml) {
-		  		datosArrayTxtXml = cliente.split(",");
+		  		datosArrayTxtXml = cliente.split(delimitador);
 		  		
 		  		if(datosArrayTxtXml.length != 7) {
 			  		//No se introducieron toda la informacion del cliente
@@ -312,7 +312,8 @@ public class AppController {
                       clientes.addLast(cliente);
                   }
 
-                  modelMap.put("textoResultado1", archivoCargadoXmlTxtStr);
+                  modelMap.put("textoArchivo1", archivoCargadoXmlTxtStr);
+                  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
                   return "xml_txt.jsp";
                   
               } catch (Exception e) {
@@ -335,6 +336,7 @@ public class AppController {
       return "xml_txt.jsp";
   }
  
+  String txtStr = "";
   
   @PostMapping("/convertirArchivoXmlTxt")   
   public String convertirArchivoXmlTxt(ModelMap modelMap, 
@@ -363,6 +365,7 @@ public class AppController {
 	  }
 	  
 	  	  //TODO: DESENCRIPTAR (CACHA UNA EXCEPTION)
+	  	  //Input length must be multiple of 16 when decrypting
 		  clientes.forEach(c->{
 			  
 			String decryptedText = "";
@@ -380,56 +383,43 @@ public class AppController {
 			  c.setNumeroTarjeta(decryptedText);
 		  }); 
 		  
-		  StringBuilder txtStr = new StringBuilder();
 		  
-		  //TODO:ARREGLAR QUE SEA FILECHOOSER
-		  String fileName = "spring-boot-project00";
 		  
-		  ResourceLoader resourceLoader = null;
 		  
-		  try {
-			  
-			  Resource resource = (Resource) resourceLoader.getResource("classpath:" + fileName);
-	            File file = new File(((org.springframework.core.io.Resource) resource).getURI());
+		  FileWriter fichero = new FileWriter("objeto.txt");
 
-	            // Obtener el directorio padre del archivo
-	            File directory = file.getParentFile();
-
-	            // Crear el directorio si no existe
-	            if (!directory.exists()) {
-	                directory.mkdirs();
-	            }
+		  //Imprimiendo resultado txt
+		  clientes.forEach(cliente ->{
+			  String linea = String.format("%s,%s,%s,%s,%s,%s,%s",
+					  	cliente.getDocumento(),
+					  	cliente.getNombres(),
+                		cliente.getApellidos(),
+                        cliente.getNumeroTarjeta(),
+                        cliente.getTipoTarjeta(),
+                        cliente.getTelefono(),
+                        cliente.getPoligono());
+                        
 			  
-			  clientes.forEach(cliente ->{
-				  String linea = String.format("%s,%s,%s,%s,%s,%s,%s",
-	                		cliente.getNombres(),
-	                		cliente.getApellidos(),
-	                        cliente.getDocumento(),
-	                        cliente.getNumeroTarjeta(),
-	                        cliente.getPoligono(),
-	                        cliente.getTelefono(),
-	                        cliente.getTipoTarjeta());
-				  try {
-					FileCopyUtils.copy(linea.getBytes(StandardCharsets.UTF_8), file);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				  // Agrega un salto de línea después de cada cliente
-	                txtStr.append(linea).append("<br>");
-			  });
-	            
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	            // Manejar el error de escritura del archivo
-	        }
-	  
-	  
+			  			// Agrega un salto de línea después de cada cliente
+			  			txtStr += linea + "<br>";
+              			
+              			try {
+							fichero.write(linea+"\n");
+						} catch (IOException e) {
+							System.out.print("Error con escribir en archivo");
+							e.printStackTrace();
+						}
+		  });
+		  
+		  fichero.close();
 	  		
 	  modelMap.put("error0", "Archivo convertido y gurdado correctamente");
-	  modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
-	  modelMap.put("textoResultado1", txtStr);	  	
-	  return "txt_xml.jsp";
+	  modelMap.put("textoArchivo1", archivoCargadoXmlTxtStr);
+	  modelMap.put("textoResultado1", txtStr);
+	  txtStr = "";
+	  clientes.clear();
+	  	
+	  return "xml_txt.jsp";
   } 
   
   
