@@ -38,7 +38,7 @@ import com.uca.spring.util.Util;
 
 @Controller
 @RequestMapping("/")
-public class AppController {
+public class AppController { //Comentario de prueba
 	
 		//Variables globales:
 	  //Contenido del txt:
