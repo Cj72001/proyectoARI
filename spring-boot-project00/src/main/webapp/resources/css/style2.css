@@ -131,7 +131,7 @@
 
   
   .custom-scrollbar {
-    width: 300px;
+    width: 500px;
     height: 200px;
     overflow: auto;
   }
@@ -176,8 +176,8 @@
     display: none;
 }
 
-  .separador{
-    padding-top: 2em;
-  }
+.container-box, .box.separador2 {
+    flex-basis: 0%;
+}
  
 

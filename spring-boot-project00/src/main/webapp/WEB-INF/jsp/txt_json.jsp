@@ -103,7 +103,7 @@ function convertToJson() {
 		  delimit: delimitador
 		};
 
-fetch('http://localhost:8080/convertToJson', {
+fetch('http://localhost:9090/springform/convertToJson', {
 	  method: 'POST',
 	  headers: {
 	    'Content-Type': 'application/json'
