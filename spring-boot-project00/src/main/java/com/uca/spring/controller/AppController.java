@@ -1,8 +1,9 @@
 package com.uca.spring.controller;
 
-import java.io.BufferedWriter;
+import java.awt.PageAttributes.MediaType;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,13 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
@@ -412,6 +415,41 @@ public class AppController {
 		  });
 		  
 		  fichero.close();
+		  
+//		  ClassPathResource resource = new ClassPathResource("objeto.txt");
+//
+//		  org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+//		  headers.add("Content-Disposition", "attachment; filename=\"objeto.txt\"");
+//		  headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+//		  headers.add("Pragma", "no-cache");
+//		  headers.add("Expires", "0");
+//
+//		  ResponseEntity<byte[]> responseEntity;
+//		  try {
+//		      byte[] fileBytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
+//		      responseEntity = ResponseEntity.ok()
+//		              .headers(headers)
+//		              .contentLength(resource.contentLength())
+//		              .contentType(MediaType.TEXT_PLAIN_VALUE)
+//		              .body(fileBytes);
+//		  } catch (IOException e) {
+//		      // Handle the exception in case of error while reading the file
+//		      responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//		  }
+		  
+//		  File file = new File("fileName");
+//		  FileInputStream in = new FileInputStream(file);
+//		  byte[] content = new byte[(int) file.length()];
+//		  in.read(content);
+//		  ServletContext sc = request.getSession().getServletContext();
+//		  String mimetype = sc.getMimeType(file.getName());
+//		  response.reset();
+//		  response.setContentType(mimetype);
+//		  response.setContentLength(content.length);
+//		  response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+//		  org.springframework.util.FileCopyUtils.copy(content, response.getOutputStream());
+
+
 	  		
 	  modelMap.put("error0", "Archivo convertido y gurdado correctamente");
 	  modelMap.put("textoArchivo1", archivoCargadoXmlTxtStr);
