@@ -105,13 +105,13 @@ public class AppController { //Comentario de prueba
   @GetMapping("/txtJson")
   public String txtJson() {
 	  
-    return "json_txt.jsp";
+    return "txt_json.jsp";
   } 
   
   @GetMapping("/jsonTxt")
   public String jsonTxt() {
 	  
-    return "txt_json.jsp";
+    return "json_txt.jsp";
   } 
   
   //____________________________________________________________________________________________________________

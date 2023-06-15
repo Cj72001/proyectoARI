@@ -1,0 +1,183 @@
+#file-input {
+    display: none;
+  }
+
+  .combobox {
+    position: relative;
+    display: inline-block;
+  }
+
+  .combobox select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  .combobox:after {
+    content: '\25BC';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  .input-container {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .input-container input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+  }
+
+  /* Estilos CSS para el contenido de la pgina */
+  .content {
+    padding: 20px;
+  }
+
+  h1 {
+    justify-content: center;
+    overflow: hidden;
+    display: flex;
+    padding: 1.5%;
+  }
+
+  .linea {
+    border-top: 2px solid black;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    margin-left:2%;
+    margin-right: 2%;
+  }
+
+  .button {
+   padding: 10px 20px;
+    background-color: rgb(236, 224, 224);
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    margin: 2.5%;
+    border-radius: 2px;
+    color: rgb(98, 94, 94);
+    margin-left: 15%;
+    margin-right: 15%;
+    cursor: pointer;
+  }
+  
+
+  .div-botones {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+
+  .input-container input {
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+  }
+
+
+  .button-archivo{
+    text-align: center;
+    font-size: medium;
+    padding: 15px 15px;
+    text-decoration: none;
+    background: none;
+    border-radius: none;
+    border: none;
+    margin-right: 85%;
+    cursor: pointer;
+  }
+
+  .button-archivo:hover {
+    background-color: #ddd;
+    color: black;
+  }
+
+  .div-texto{
+    
+    background-color:bisque;
+   
+  }
+  
+  .container-box {
+    display: flex;
+    flex-direction: row;
+    padding: 2%;
+    height: 20em;
+  }
+
+  .box {
+    flex: 1;
+    padding: 20px;
+    margin: 10px;
+  }
+
+  
+  .custom-scrollbar {
+    width: 300px;
+    height: 200px;
+    overflow: auto;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px; /* Ancho de la barra de desplazamiento */
+    background-color: #000000;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color de fondo de la barra de desplazamiento */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888; /* Color del pulgar de la barra de desplazamiento */
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color del pulgar de la barra de desplazamiento al pasar el cursor sobre l */
+  }
+ 
+  .button-container {
+    display: block;
+    margin-bottom: 10px; /* Espacio entre los botones */
+  }
+
+  .button-convertir{
+    background-color:#ccc; /* Green */
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: 220px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  #fileInput {
+    display: none;
+}
+
+  .separador{
+    padding-top: 2em;
+  }
+ 
+
