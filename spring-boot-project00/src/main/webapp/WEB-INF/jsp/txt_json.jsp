@@ -38,7 +38,7 @@
           
           <div class="button-container">
             <div class="input-container">
-              <input id="inputLlave" type="text" placeholder="Ingrese la llave" />
+              <input id="inputLlave" type="text" placeholder="Ingrese la llave (8 bits)" />
             </div>
           </div>
           <div class="button-container">
@@ -91,11 +91,22 @@ fileInput.addEventListener('change', function(){
 //Al darle click al botón de convertir a JSON
 function convertToJson() {
   if (!fileContent) {
-    console.error('No se ha cargado ningún archivo.');
+    fileContentDiv.textContent = "No se ha cargado ningún archivo.";
     return;
   }
+  
   const llave = inputLlave.value; 
   const delimitador = inputDelimitador.value;
+  
+  if(llave.length !== 8){
+  	fileContentDiv.textContent = "Favor introduzca una llave multiplo de 8 caracteres.";
+    return;
+  }
+  
+  if(delimitador.length !== 1){
+  	fileContentDiv.textContent = "Favor introduzca un caracter como delimitador correcto.";
+    return;
+  }
   
   const contenido = {
 		  content: fileContent,
@@ -123,10 +134,16 @@ fetch('http://localhost:9090/springform/convertToJson', {
 
 //Función para guardar en el sistema de archivos
   async function saveJson() {
-            if (fileContentDiv.textContent) {
-                var filename = 'conversion.json';
-                await saveAsFile(filename, fileContentDiv.textContent);
-            }
+  
+		  if (!fileContent) {
+		    fileContentDiv.textContent = "Favor cargue un archivo primero";
+		    return;
+		  }
+		  
+          if (fileContentDiv.textContent) {
+               var filename = 'conversion.json';
+               await saveAsFile(filename, fileContentDiv.textContent);
+          }
         }
 
         async function saveAsFile(filename, content) {

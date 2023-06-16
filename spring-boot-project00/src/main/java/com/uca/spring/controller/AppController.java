@@ -1,9 +1,8 @@
 package com.uca.spring.controller;
 
-import java.awt.PageAttributes.MediaType;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,18 +12,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -499,10 +494,20 @@ public class AppController { //Comentario de prueba
       
       
       for (int i = 0; i < clientesArrayTxtJson.length; i++) {
-      	 String elemento = clientesArrayTxtJson[i];
-      	datosArrayTxtJson = elemento.split("\\"+delimitador);
+    	  String elemento = clientesArrayTxtJson[i];
+          datosArrayTxtJson = elemento.split("\\"+delimitador);
+          
+    	  String encryptedText = "";
+    	  
+    	  try {
+			encryptedText = Util.encrypt(datosArrayTxtJson[3], llave);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+      	 
       	listaDeClientes.add(new ClienteJSON(datosArrayTxtJson[0], datosArrayTxtJson[1], datosArrayTxtJson[2], 
-      			datosArrayTxtJson[3], datosArrayTxtJson[4], datosArrayTxtJson[5], datosArrayTxtJson[6]));
+      			encryptedText, datosArrayTxtJson[4], datosArrayTxtJson[5], datosArrayTxtJson[6]));
       }
       	        
 
@@ -536,9 +541,18 @@ public class AppController { //Comentario de prueba
       Gson gson = new Gson();
       List<ClienteJSON> listaDeClientes = gson.fromJson(jsonContent, new TypeToken<List<ClienteJSON>>() {}.getType());
       	        	        
-
-      // Combinar los valores en un objeto Person
-      //ParametrosDTO parametros = new ParametrosDTO(contenido, llave, delimitador);
+      for (ClienteJSON cliente : listaDeClientes) {
+    	  String decryptedText = "";
+		try {
+			decryptedText = Util.decrypt(cliente.getNumeroTarjeta(), llave);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		  System.out.print(cliente.getNumeroTarjeta());
+          cliente.setNumeroTarjeta(decryptedText); 
+          System.out.print(cliente.getNumeroTarjeta());
+      }
 
       return ResponseEntity.ok(listaDeClientes);
   }

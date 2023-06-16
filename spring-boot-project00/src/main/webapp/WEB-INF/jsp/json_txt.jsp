@@ -39,7 +39,7 @@
           
           <div class="button-container">
             <div class="input-container">
-              <input id="inputLlave" type="text" placeholder="Ingrese la llave" />
+              <input id="inputLlave" type="text" placeholder="Ingrese la llave (8 bits)" />
             </div>
           </div>
           <div class="button-container">
@@ -93,11 +93,23 @@ fileInput.addEventListener('change', function(){
 //Al darle click al botón de convertir a JSON
 function convertToJson() {
   if (!fileContent) {
-    console.error('No se ha cargado ningún archivo.');
+    fileContentDiv.textContent = "No se ha cargado ningún archivo.";
     return;
   }
+  
   const llave = inputLlave.value; 
   const delimitador = inputDelimitador.value;
+  
+  if(llave.length !== 8){
+  	fileContentDiv.textContent = "Favor introduzca una llave multiplo de 8 caracteres.";
+    return;
+  }
+  
+  if(delimitador.length !== 1){
+  	fileContentDiv.textContent = "Favor introduzca un caracter como delimitador correcto.";
+    return;
+  }
+  
   
   const contenido = {
 		  content: fileContent,
@@ -119,7 +131,10 @@ fetch('http://localhost:9090/springform/convertToTxt', {
 		  // Recorre la lista de objetos y crea elementos para mostrarlos en el div
 		    data.forEach(object => {
 		    	 const pElement = document.createElement('p');
-		    	 pElement.textContent = `${object.documento}${delimitador}${object.nombres}${delimitador}${object.apellidos}${delimitador}${object.numeroTarjeta}${delimitador}${object.tipoTarjeta}${delimitador}${object.telefono}${delimitador}${object.poligono}`;
+		    	 console.log(object.nombres);
+		    	
+		    	 const contenido = object.documento+delimitador+object.nombres+delimitador+object.apellidos+delimitador+object.numeroTarjeta+delimitador+object.tipoTarjeta+delimitador+object.telefono+delimitador+object.poligono;
+		    	 pElement.textContent = contenido;
 		    	fileContentDiv.appendChild(pElement);
 		    });
 		  
@@ -132,6 +147,12 @@ fetch('http://localhost:9090/springform/convertToTxt', {
 
 //Función para guardar en el sistema de archivos
   async function saveJson() {
+ 
+		 	if (!fileContent) {
+				    fileContentDiv.textContent = "Favor cargue un archivo primero";
+				    return;
+		     } 
+		  
             if (fileContentDiv.textContent) {
                 var filename = 'conversion.txt';
                 await saveAsFile(filename, fileContentDiv.textContent);
