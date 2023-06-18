@@ -1,35 +1,37 @@
 package com.uca.spring.controller;
 
-import java.awt.PageAttributes.MediaType;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.uca.spring.model.Cliente;
+import com.uca.spring.model.ClienteJSON;
 import com.uca.spring.model.ClienteXml;
 import com.uca.spring.util.Util;
 
@@ -39,7 +41,7 @@ import com.uca.spring.util.Util;
 @Controller
 @RequestMapping("/")
 public class AppController { //Comentario de prueba
-	
+	private List<ClienteJSON> listaDeClientes;
 		//Variables globales:
 	  //Contenido del txt:
 	  String fileContent = "";
@@ -105,13 +107,13 @@ public class AppController { //Comentario de prueba
   @GetMapping("/txtJson")
   public String txtJson() {
 	  
-    return "json_txt.jsp";
+    return "txt_json.jsp";
   } 
   
   @GetMapping("/jsonTxt")
   public String jsonTxt() {
 	  
-    return "txt_json.jsp";
+    return "json_txt.jsp";
   } 
   
   //____________________________________________________________________________________________________________
@@ -459,6 +461,101 @@ public class AppController { //Comentario de prueba
 	  	
 	  return "xml_txt.jsp";
   } 
+  
+  
+  @PostMapping("/convertToJson")
+  public ResponseEntity<List<ClienteJSON>> convertToJSON(@RequestBody String requestBody) {
+  	//Array para los obejtos clientes
+  	listaDeClientes = new ArrayList<>();
+  	
+  	//Array para separar los clientes
+	  String[] clientesArrayTxtJson = new String[]{};
+  	
+  	//Array para separar el contenido del documento segun el delimitador TXT a JSON
+	  String[] datosArrayTxtJson = new String[]{};
+  	
+	  
+  	// Descomponer el objeto JSON recibido en un mapa de campos
+      ObjectMapper objectMapper = new ObjectMapper();
+      Map<String, Object> jsonMap;
+      try {
+          jsonMap = objectMapper.readValue(requestBody, new TypeReference<Map<String, Object>>() {});
+      } catch (IOException e) {
+          return ResponseEntity.badRequest().build();
+      }
+
+      //Obtener los valores de los campos del objeto JSON
+      String contenido = (String) jsonMap.get("content");
+      String llave = (String) jsonMap.get("key");
+      String delimitador = (String) jsonMap.get("delimit");
+      
+      
+      clientesArrayTxtJson = contenido.split("\n");
+      
+      
+      for (int i = 0; i < clientesArrayTxtJson.length; i++) {
+    	  String elemento = clientesArrayTxtJson[i];
+          datosArrayTxtJson = elemento.split("\\"+delimitador);
+          
+    	  String encryptedText = "";
+    	  
+    	  try {
+			encryptedText = Util.encrypt(datosArrayTxtJson[3], llave);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+      	 
+      	listaDeClientes.add(new ClienteJSON(datosArrayTxtJson[0], datosArrayTxtJson[1], datosArrayTxtJson[2], 
+      			encryptedText, datosArrayTxtJson[4], datosArrayTxtJson[5], datosArrayTxtJson[6]));
+      }
+      	        
+
+      // Combinar los valores en un objeto Person
+      //ParametrosDTO parametros = new ParametrosDTO(contenido, llave, delimitador);
+
+      return ResponseEntity.ok(listaDeClientes);
+  }
+  
+
+  @PostMapping("/convertToTxt")
+  public ResponseEntity<List<ClienteJSON>> convertToTxt(@RequestBody String requestBody) {
+  	//Array para los obejtos clientes
+  	listaDeClientes = new ArrayList<>();
+  	
+	  
+  	// Descomponer el objeto JSON recibido en un mapa de campos
+      ObjectMapper objectMapper = new ObjectMapper();
+      Map<String, Object> jsonMap;
+      try {
+          jsonMap = objectMapper.readValue(requestBody, new TypeReference<Map<String, Object>>() {});
+      } catch (IOException e) {
+          return ResponseEntity.badRequest().build();
+      }
+
+      //Obtener los valores de los campos del objeto JSON
+      String jsonContent = (String) jsonMap.get("content");
+      String llave = (String) jsonMap.get("key");
+      String delimitador = (String) jsonMap.get("delimit");
+      
+      Gson gson = new Gson();
+      List<ClienteJSON> listaDeClientes = gson.fromJson(jsonContent, new TypeToken<List<ClienteJSON>>() {}.getType());
+      	        	        
+      for (ClienteJSON cliente : listaDeClientes) {
+    	  String decryptedText = "";
+		try {
+			decryptedText = Util.decrypt(cliente.getNumeroTarjeta(), llave);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		  System.out.print(cliente.getNumeroTarjeta());
+          cliente.setNumeroTarjeta(decryptedText); 
+          System.out.print(cliente.getNumeroTarjeta());
+      }
+
+      return ResponseEntity.ok(listaDeClientes);
+  }
   
   
 }
