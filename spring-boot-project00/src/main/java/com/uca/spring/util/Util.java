@@ -55,12 +55,12 @@ public class Util {
     }
 	
 	//Funcion para retornar como stringBuilder el contenido para la vista del resultado del txt
-		public static String txtStr(List<Cliente> clientes) {
+		public static String txtStr(List<Cliente> clientes, String delimitador) {
 		      // Generar el contenido del archivo como un String
 		      StringBuilder stringBuilder = new StringBuilder();
 
 		      clientes.forEach(cliente -> {
-		          String linea = String.format("%s,%s,%s,%s,%s,%s,%s",
+		          String linea = String.format("%s"+delimitador+"%s"+delimitador+"%s"+delimitador+"%s"+delimitador+"%s"+delimitador+"%s"+delimitador+"%s",
 		                  cliente.getDocumento(),
 		                  cliente.getNombres(),
 		                  cliente.getApellidos(),
@@ -77,12 +77,12 @@ public class Util {
 	
 	
 	//Funcion para retornar como stringBuilder el contenido para el txt
-	public static String generarContenidoArchivoTxt(List<Cliente> clientes) {
+	public static String generarContenidoArchivoTxt(List<Cliente> clientes, String delimitador) {
 	      // Generar el contenido del archivo como un String
 	      StringBuilder stringBuilder = new StringBuilder();
 
 	      clientes.forEach(cliente -> {
-	          String linea = String.format("%s,%s,%s,%s,%s,%s,%s",
+	          String linea = String.format("%s"+delimitador+"%s"+delimitador+"%s"+delimitador+"%s"+delimitador+"%s"+delimitador+"%s"+delimitador+"%s",
 	                  cliente.getDocumento(),
 	                  cliente.getNombres(),
 	                  cliente.getApellidos(),

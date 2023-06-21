@@ -65,6 +65,7 @@ public class AppController { //Comentario de prueba
 	  
 	  //XML a TXT
 	  String archivoCargadoXmlTxtStr = "";
+	  String delimitadorXmlTxt = "\\";
 
 	//Action que se invoca al iniciar la app en la ruta del login (/)
   @GetMapping("/")
@@ -91,6 +92,8 @@ public class AppController { //Comentario de prueba
 	  datosArrayTxtXml = new String[0];
 	  clientes.clear();
 	  txtStr = "";
+	  delimitadorXmlTxt = "\\";
+	  errorDesencriptado = false;
 	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
 	  
@@ -107,6 +110,8 @@ public class AppController { //Comentario de prueba
 	  datosArrayTxtXml = new String[0];
 	  clientes.clear();
 	  txtStr = "";
+	  delimitadorXmlTxt = "\\";
+	  errorDesencriptado = false;
 	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");  
 	  return "xml_txt.jsp";
@@ -151,7 +156,7 @@ public class AppController { //Comentario de prueba
   public ResponseEntity<byte[]> descargarTxt() {
 	  
 		// Generar los datos del archivo
-	      String contenidoArchivo = Util.generarContenidoArchivoTxt(clientes);
+	      String contenidoArchivo = Util.generarContenidoArchivoTxt(clientes, delimitadorXmlTxt);
 	      byte[] archivoBytes = contenidoArchivo.getBytes();
 
 	      // Configurar los encabezados de la respuesta
@@ -239,7 +244,7 @@ public class AppController { //Comentario de prueba
 		  	clientesArrayTxtXml = fileContent.split("\n");
 		  	
 		  	for(String cliente : clientesArrayTxtXml) {
-		  		datosArrayTxtXml = cliente.split(delimitador);
+		  		datosArrayTxtXml = cliente.split("\\"+delimitador);
 		  		
 		  		if(datosArrayTxtXml.length != 7) {
 			  		//No se introducieron toda la informacion del cliente
@@ -379,7 +384,7 @@ public class AppController { //Comentario de prueba
           modelMap.put("error1", "No se ha seleccionado ningún archivo");
       }
 
-      // Si ocurre algún error, mostrarlo en la vista
+      
       return "xml_txt.jsp";
   }
  
@@ -434,8 +439,8 @@ public class AppController { //Comentario de prueba
 			  c.setNumeroTarjeta(decryptedText);
 		  }); 
 		  
-		  
-		  txtStr = Util.txtStr(clientes);
+		  delimitadorXmlTxt = delimitador;
+		  txtStr = Util.txtStr(clientes, delimitador);
 		  
 		  if(errorDesencriptado) {
 			  modelMap.put("error2", "Hubo un error con la clave");
