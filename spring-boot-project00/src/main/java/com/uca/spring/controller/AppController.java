@@ -415,8 +415,6 @@ public class AppController { //Comentario de prueba
 	  	  //Desencriptando los numeros de tarjeta de cada cliente:
 	  	  //Input length must be multiple of 16 when decrypting
 	  
-	  
-	  
 		  clientes.forEach(c->{
 			  
 			String decryptedText = "";
