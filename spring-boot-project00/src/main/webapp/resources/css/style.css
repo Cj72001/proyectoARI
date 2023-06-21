@@ -20,6 +20,11 @@ h3{
 	padding-bottom: 20px;
 }
 
+.tema{
+	padding-bottom: 20px;
+	padding-top: 10px;
+}
+
 .container-wrapper {
   display: flex;
   flex-direction: column;

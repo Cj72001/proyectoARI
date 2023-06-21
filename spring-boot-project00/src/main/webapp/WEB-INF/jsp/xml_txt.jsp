@@ -22,12 +22,10 @@
 
 
 	<div class="tema">
-		<h1>CONVERTIR XML A TXT</h1>
+		<h1>CONVERTIR TXT A XML</h1>
 		<h2 class=error0>${error0}</h2>
 		<h2>${error1}</h2>
 		<h3>${error2}</h3>
-
-
 	</div>
 
 

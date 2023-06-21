@@ -317,7 +317,7 @@ public class AppController { //Comentario de prueba
 	  String xmlStr = Util.xmlStr(clientes);
 	  
 	  		
-	  modelMap.put("error0", "Archivo convertido y gurdado correctamente");
+	  modelMap.put("error0", "Archivo Convertido Correctamente");
 	  modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
 	  modelMap.put("textoResultado1", xmlStr);	 
 	  archivoCargadoTxtXmlStr = "";
