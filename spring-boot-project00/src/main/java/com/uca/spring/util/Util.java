@@ -116,10 +116,6 @@ public class Util {
 		-PBEKeySpec: La clase PBEKeySpec representa una especificación de clave basada en una contraseña (en este caso, la clave proporcionada). Se utiliza junto con SecretKeyFactory para generar la clave secreta utilizando PBKDF2.
 		-Base64: La clase Base64 proporciona métodos estáticos para codificar y decodificar datos en formato Base64. Se utiliza para codificar el número cifrado en Base64 antes de retornarlo como una cadena de texto. */
 	
-		/*Al utilizar el algoritmo de derivación de claves PBKDF2 en la función cifrarNumero, 
-		se puede proporcionar una clave de cualquier longitud, incluso si no es de 8 bits. 
-		PBKDF2 se encarga de generar una clave de longitud adecuada para el algoritmo AES,
-		que puede ser de 128, 192 o 256 bits */
 	  
 	  
   //Funcion para encriptar:
