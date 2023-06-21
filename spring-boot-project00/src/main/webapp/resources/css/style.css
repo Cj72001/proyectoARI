@@ -1,3 +1,8 @@
+
+h1{
+	padding-bottom: 20px;
+}
+
 h2{
 	color: red;
 	transition: 0.5s;
@@ -6,6 +11,7 @@ h2{
 h3{
 	color: #455e88;	
 	transition: 0.5s;
+	padding-bottom: 20px;
 }
 
 .error0{

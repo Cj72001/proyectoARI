@@ -75,7 +75,7 @@
 						name="llave" placeholder="abcdefgh"
 						onFocus="field_focus(this, 'llave');"
 						onblur="field_blur(this, 'llave');" class="clave" /> <br> <input
-						class="btn2" type="submit" value="Guardar Archivo">
+						class="btn2" type="submit" value="Generar">
 				</div>
 				<!-- End Box -->
 			</form>
@@ -95,6 +95,18 @@
 			<!-- box div-texto -->
 		</div>
 		<!-- container-box -->
+		
+		
+		<div class="box separador2">
+			<form method="get" action="descargarTxt"
+				enctype="multipart/form-data">
+				<div class="box"> 
+					<input class="btn1" type="submit" value="Descargar">
+				</div>
+				<!-- End Box -->
+			</form>
+
+		</div>
 		
 		
 	</div>

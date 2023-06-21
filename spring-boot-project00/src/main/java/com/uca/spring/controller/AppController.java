@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.http.HttpHeaders;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -17,6 +19,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -34,6 +38,7 @@ import com.uca.spring.model.Cliente;
 import com.uca.spring.model.ClienteJSON;
 import com.uca.spring.model.ClienteXml;
 import com.uca.spring.util.Util;
+
 
 
 
@@ -82,8 +87,10 @@ public class AppController { //Comentario de prueba
 	  //Inicializando resultados
 	  fileContent = "";
 	  archivoCargadoTxtXmlStr = "";
+	  archivoCargadoXmlTxtStr = "";
 	  datosArrayTxtXml = new String[0];
 	  clientes.clear();
+	  txtStr = "";
 	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
 	  
@@ -99,10 +106,71 @@ public class AppController { //Comentario de prueba
 	  archivoCargadoXmlTxtStr = "";
 	  datosArrayTxtXml = new String[0];
 	  clientes.clear();
+	  txtStr = "";
 	  modelMap.put("textoArchivo1", "No se ha cargado ningun archivo");
 	  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");  
-    return "xml_txt.jsp";
+	  return "xml_txt.jsp";
   } 
+  
+  @GetMapping("/descargarXML")
+  public ResponseEntity<byte[]> descargarXML() throws JAXBException {
+	  
+	// Crear el contexto JAXB
+      JAXBContext context = JAXBContext.newInstance(ClienteXml.class);
+
+      // Crear el marshaller
+      Marshaller marshaller = context.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);
+
+      ClienteXml clientesXml = new ClienteXml();
+      clientesXml.setClientes(clientes);
+
+      // Crear un ByteArrayOutputStream para almacenar el contenido XML en memoria
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+      // Marshalizar el objeto a XML y escribirlo en el ByteArrayOutputStream
+      marshaller.marshal(clientesXml, outputStream);
+
+      // Obtener el contenido XML como un arreglo de bytes
+      byte[] contenidoXML = outputStream.toByteArray();
+
+      org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_XML);
+      headers.setContentDispositionFormData("attachment", "objeto.xml");
+      
+      System.out.println("Archivo XML guardado correctamente.");
+      //Limpiando variables
+      txtStr = "";
+      clientes.clear();
+
+      return new ResponseEntity<>(contenidoXML, headers, org.springframework.http.HttpStatus.OK);
+  }
+  
+  @GetMapping("/descargarTxt")
+  public ResponseEntity<byte[]> descargarTxt() {
+	  
+		// Generar los datos del archivo
+	      String contenidoArchivo = Util.generarContenidoArchivoTxt(clientes);
+	      byte[] archivoBytes = contenidoArchivo.getBytes();
+
+	      // Configurar los encabezados de la respuesta
+	      org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+	      headers.add(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=objeto.txt");
+	      headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+	      System.out.println("Archivo TXT guardado correctamente.");
+	      //Limpiando variables
+	      txtStr = "";
+	      clientes.clear();
+	      
+	      // Devolver el archivo como una respuesta HTTP
+	      return ResponseEntity
+	              .ok()
+	              .headers(headers)
+	              .body(archivoBytes);
+      
+  }
   
   @GetMapping("/txtJson")
   public String txtJson() {
@@ -219,15 +287,14 @@ public class AppController { //Comentario de prueba
 		  return "txt_xml.jsp";
 	  }
 	  
-	  if(llave.length() < 8) {
+	  if(llave.length() < 16) {
 		  modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
 		  modelMap.put("textoResultado1", "No se ha convertido ningun archivo");
-		  modelMap.put("error1", "Escriba una clave valida (8 bits)");
+		  modelMap.put("error1", "Escriba una clave valida (16 caracteres)");
 		  return "txt_xml.jsp";
 	  }
 	  
-	  //TODO: ARREGLAR PARA QUE ENCRIPTE BIEN:
-	  
+	  	  //Encriptando los numeros de tarjeta de cada cliente:
 		  clientes.forEach(c->{
 			  String encryptedText = "";
 			  
@@ -246,42 +313,17 @@ public class AppController { //Comentario de prueba
 			  c.setNumeroTarjeta(encryptedText);
 		  }); 
 		  
-	  
-	  String xmlStr = "";
-	  try {
-          // Crear el contexto JAXB
-          JAXBContext context = JAXBContext.newInstance(ClienteXml.class);
-
-          // Crear el marshaller
-          Marshaller marshaller = context.createMarshaller();
-          marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-          marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);
- 
-          ClienteXml clientesXml = new ClienteXml();
-          clientesXml.setClientes(clientes);
-
-          // Guardar el objeto como archivo XML
-          File file = new File("objeto.xml"); //Si es el mismo nombre, agrega los nuevos clientes
-          marshaller.marshal(clientesXml, file);
-
-          System.out.println("Archivo XML guardado correctamente.");
-          
-          
-       // Obtener el contenido del archivo XML como String
-          ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-          marshaller.marshal(clientesXml, outputStream);
-          xmlStr = new String(outputStream.toByteArray(), "UTF-8");
-          
-      } catch (JAXBException e) {
-          e.printStackTrace();
-      }
+	  //PARA MOSTRAR EL RESULTADO QUE SE DESCARGARA
+	  String xmlStr = Util.xmlStr(clientes);
 	  
 	  		
 	  modelMap.put("error0", "Archivo convertido y gurdado correctamente");
 	  modelMap.put("textoArchivo1", archivoCargadoTxtXmlStr);
-	  modelMap.put("textoResultado1", xmlStr);	  	
+	  modelMap.put("textoResultado1", xmlStr);	 
+	  archivoCargadoTxtXmlStr = "";
 	  return "txt_xml.jsp";
   } 
+  
   
   
   
@@ -342,6 +384,7 @@ public class AppController { //Comentario de prueba
   }
  
   String txtStr = "";
+  boolean errorDesencriptado = false;
   
   @PostMapping("/convertirArchivoXmlTxt")   
   public String convertirArchivoXmlTxt(ModelMap modelMap, 
@@ -369,8 +412,11 @@ public class AppController { //Comentario de prueba
 		  return "xml_txt.jsp";
 	  }
 	  
-	  	  //TODO: DESENCRIPTAR (CACHA UNA EXCEPTION)
+	  	  //Desencriptando los numeros de tarjeta de cada cliente:
 	  	  //Input length must be multiple of 16 when decrypting
+	  
+	  
+	  
 		  clientes.forEach(c->{
 			  
 			String decryptedText = "";
@@ -380,7 +426,9 @@ public class AppController { //Comentario de prueba
 				decryptedText = Util.decrypt(c.getNumeroTarjeta(), llave);
 			} catch (Exception e) {
 				System.out.println("Hubo un error desencriptando la tarjeta");
-				e.printStackTrace();  
+				errorDesencriptado = true;
+				e.printStackTrace(); 
+				 
 			}
 			  
 			  
@@ -389,75 +437,18 @@ public class AppController { //Comentario de prueba
 		  }); 
 		  
 		  
+		  txtStr = Util.txtStr(clientes);
 		  
+		  if(errorDesencriptado) {
+			  modelMap.put("error2", "Hubo un error con la clave");
+			  modelMap.put("textoArchivo1", archivoCargadoXmlTxtStr);
+			  modelMap.put("textoResultado1", txtStr);
+			  return "xml_txt.jsp";
+		}
 		  
-		  FileWriter fichero = new FileWriter("objeto.txt");
-
-		  //Imprimiendo resultado txt
-		  clientes.forEach(cliente ->{
-			  String linea = String.format("%s,%s,%s,%s,%s,%s,%s",
-					  	cliente.getDocumento(),
-					  	cliente.getNombres(),
-                		cliente.getApellidos(),
-                        cliente.getNumeroTarjeta(),
-                        cliente.getTipoTarjeta(),
-                        cliente.getTelefono(),
-                        cliente.getPoligono());
-                        
-			  
-			  			// Agrega un salto de línea después de cada cliente
-			  			txtStr += linea + "<br>";
-              			
-              			try {
-							fichero.write(linea+"\n");
-						} catch (IOException e) {
-							System.out.print("Error con escribir en archivo");
-							e.printStackTrace();
-						}
-		  });
-		  
-		  fichero.close();
-		  
-//		  ClassPathResource resource = new ClassPathResource("objeto.txt");
-//
-//		  org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-//		  headers.add("Content-Disposition", "attachment; filename=\"objeto.txt\"");
-//		  headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-//		  headers.add("Pragma", "no-cache");
-//		  headers.add("Expires", "0");
-//
-//		  ResponseEntity<byte[]> responseEntity;
-//		  try {
-//		      byte[] fileBytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
-//		      responseEntity = ResponseEntity.ok()
-//		              .headers(headers)
-//		              .contentLength(resource.contentLength())
-//		              .contentType(MediaType.TEXT_PLAIN_VALUE)
-//		              .body(fileBytes);
-//		  } catch (IOException e) {
-//		      // Handle the exception in case of error while reading the file
-//		      responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//		  }
-		  
-//		  File file = new File("fileName");
-//		  FileInputStream in = new FileInputStream(file);
-//		  byte[] content = new byte[(int) file.length()];
-//		  in.read(content);
-//		  ServletContext sc = request.getSession().getServletContext();
-//		  String mimetype = sc.getMimeType(file.getName());
-//		  response.reset();
-//		  response.setContentType(mimetype);
-//		  response.setContentLength(content.length);
-//		  response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-//		  org.springframework.util.FileCopyUtils.copy(content, response.getOutputStream());
-
-
-	  		
 	  modelMap.put("error0", "Archivo convertido y gurdado correctamente");
 	  modelMap.put("textoArchivo1", archivoCargadoXmlTxtStr);
 	  modelMap.put("textoResultado1", txtStr);
-	  txtStr = "";
-	  clientes.clear();
 	  	
 	  return "xml_txt.jsp";
   } 

@@ -7,32 +7,97 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
 
+import com.uca.spring.model.Cliente;
+import com.uca.spring.model.ClienteXml;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.LinkedList;
+import java.util.List;
+
 
 
 public class Util {
 	
-	//TODO: IMPLEMENTAR FUNCION (AUN NO SIRVE EL FILE CHOOSER PARA DESCARGAR)
-	//Para seleccionar la carpeta:
-	public static String seleccionarCarpeta() {
-		JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-	    fileChooser.setDialogTitle("Seleccionar carpeta de destino");
-	    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-	    
-	    String carpetaDestino = "";
+	static String txtStr = "";
+	
+	//Funcion para retornar el resultado xml en un str
+	public static String xmlStr(LinkedList<Cliente> clientes) throws UnsupportedEncodingException, JAXBException{
+		
+		String xmlStr = "";
+	          // Crear el contexto JAXB
+	          JAXBContext context = JAXBContext.newInstance(ClienteXml.class);
 
-	    int returnValue = fileChooser.showOpenDialog(null);
-	    if (returnValue == JFileChooser.APPROVE_OPTION) {
-	        File selectedFile = fileChooser.getSelectedFile();
-	        carpetaDestino = selectedFile.getAbsolutePath();
-	    }
+	          // Crear el marshaller
+	          Marshaller marshaller = context.createMarshaller();
+	          marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	          marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);
+	 
+	          ClienteXml clientesXml = new ClienteXml();
+	          clientesXml.setClientes(clientes);
+	          
+	       // Obtener el contenido del archivo XML como String
+	          ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+	          marshaller.marshal(clientesXml, outputStream);
+	          xmlStr = new String(outputStream.toByteArray(), "UTF-8");
+	          
+		  
+		return xmlStr;
+    }
+	
+	//Funcion para retornar como stringBuilder el contenido para la vista del resultado del txt
+		public static String txtStr(List<Cliente> clientes) {
+		      // Generar el contenido del archivo como un String
+		      StringBuilder stringBuilder = new StringBuilder();
 
-		    return carpetaDestino;
-		}
+		      clientes.forEach(cliente -> {
+		          String linea = String.format("%s,%s,%s,%s,%s,%s,%s",
+		                  cliente.getDocumento(),
+		                  cliente.getNombres(),
+		                  cliente.getApellidos(),
+		                  cliente.getNumeroTarjeta(),
+		                  cliente.getTipoTarjeta(),
+		                  cliente.getTelefono(),
+		                  cliente.getPoligono());
+
+		          stringBuilder.append(linea).append(System.lineSeparator()).append("<br>");
+		      });
+
+		      return stringBuilder.toString();
+		  }
+	
+	
+	//Funcion para retornar como stringBuilder el contenido para el txt
+	public static String generarContenidoArchivoTxt(List<Cliente> clientes) {
+	      // Generar el contenido del archivo como un String
+	      StringBuilder stringBuilder = new StringBuilder();
+
+	      clientes.forEach(cliente -> {
+	          String linea = String.format("%s,%s,%s,%s,%s,%s,%s",
+	                  cliente.getDocumento(),
+	                  cliente.getNombres(),
+	                  cliente.getApellidos(),
+	                  cliente.getNumeroTarjeta(),
+	                  cliente.getTipoTarjeta(),
+	                  cliente.getTelefono(),
+	                  cliente.getPoligono());
+
+	          stringBuilder.append(linea).append(System.lineSeparator());
+	      });
+
+	      return stringBuilder.toString();
+	  }
+	
+	
 	  
 	  
 	  
